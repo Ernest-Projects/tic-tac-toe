@@ -1,0 +1,149 @@
+
+
+
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    place-content: center;
+     position: relative;
+     margin: 0;
+    height: 100vh;
+    width: 100%;
+    transform-style: preserve-3d;
+    perspective:2000px;
+    transform-origin: 50% 50%;
+    transform: scale(1);
+}
+body .hed {
+    font-size: 3rem;
+    position: absolute;
+    transition:  all 1s ease-out;
+    opacity: 0;
+    font-family: "Poppins", sans-serif;
+    color:black;
+    background:white;
+    border: 1px solid black;
+}
+.animation-head {
+    animation: opacity 3s ease-in-out;
+}
+@keyframes opacity {
+    0%, 100% {opacity: 0; transform: scale(1.19)}
+    50% {opacity: 1; transform: scale(1.2)}}
+    
+body .tic-tac-toe_3d_field {
+    position: relative;
+    left: 0%;
+    opacity: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition:  all 0.3s ease-in-out;
+    background-image: url("/image-project/krestiki-noliki.jpg");
+    object-fit:fill;
+    padding: 2%;
+    width: 600px;
+    aspect-ratio:  1 / 1;
+    transform-style: preserve-3d;
+}
+.tic-tac-toe_3d_field .side-for-main {
+    transition:all 0.3s ease-in-out;
+    transform: translateZ(0px) rotateY(90deg);
+    background-image: url("/image-project/krestiki-noliki.jpg");
+    position: absolute;
+    width: calc(48px * 2);
+    height: 100%;
+    transform-style: preserve-3d;
+}
+.main-field .square {
+    background-color: transparent;
+    color:white;
+    width: auto;
+    height: auto;
+}
+.tic-tac-toe_3d_field .side-for-main:not(:nth-child(5))::after, .tic-tac-toe_3d_field .side-for-main:not(:nth-child(5))::before {
+    content: "";
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    background-image: url("/image-project/krestiki-noliki.jpg");
+}
+.tic-tac-toe_3d_field .side-for-main:nth-child(5) {
+    box-shadow: inset 0 0 50px 10px black;
+}
+.tic-tac-toe_3d_field .side-for-main:not(:nth-child(5)):not(:nth-child(2)):not(:nth-child(4))::after {
+    transform: rotateY(90deg) translateZ(-24px) translateX(-24px);
+}
+    .tic-tac-toe_3d_field .side-for-main:not(:nth-child(5)):not(:nth-child(1)):not(:nth-child(3))::after {
+    transform: rotateY(90deg) translateZ(-24px) translateX(24px);
+    }
+        .tic-tac-toe_3d_field .side-for-main:not(:nth-child(5)):not(:nth-child(1)):not(:nth-child(3))::before {
+            transform:  translateZ(-48px);
+            box-shadow: inset -20px 0px 30px 10px rgb(0, 0, 0);
+        }
+            .tic-tac-toe_3d_field .side-for-main:not(:nth-child(5)):not(:nth-child(2)):not(:nth-child(4))::before {
+                transform:  translateZ(48px);
+                box-shadow: inset -20px 0px 30px 10px rgb(0, 0, 0);
+            }
+.side-for-main:nth-child(1) {
+    left:calc(0% - 48px);
+    transition: all 0.3s ease-in-out;
+}
+.side-for-main:nth-child(2) {left:calc(100% - 48px)}
+
+.side-for-main:nth-child(3) {transform: rotateZ(90deg) rotateY(90deg);
+                            top:calc(-50% - 0px);}
+.side-for-main:nth-child(4) {transform: rotateZ(90deg) rotateY(90deg);
+                            top:calc(50% - 0px);}
+.side-for-main:nth-child(5) {width: 100%; height: 100%;
+                            transform: rotate(90deg) translateZ(-48px);}
+.transform-main-field {transform: rotateY(-40deg) rotateX(10deg);}
+
+.animation-main-field { animation:  rotate 5s;}
+
+@keyframes rotate {100%  {
+                    transform: rotateY(320deg) rotateX(10deg);
+                         }
+}
+.tic-tac-toe_3d_field .main-field {
+    width:100%; height: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap:48px;
+}
+.main-field > div { 
+   background: #000;
+   box-shadow: inset 0 0 100px 10px black,
+   0 0 10px 10px black;
+   box-sizing: border-box;
+}
+article, article::before, article::after {
+    height: 100%;
+    width: 48px;
+    box-shadow: inset 0 0 10px 1px rgb(40, 40, 40);
+    transform-style: preserve-3d;
+    position: absolute;
+    background-image: url("/image-project/steel\ 4k.jpg");
+    background-size:cover;
+    transform: translateZ(24px);
+}
+.tic-tac-toe_3d_field article.item1, article.item2 {
+    transform: rotate(90deg) translateZ(24px);
+    box-shadow: inset;
+}
+.tic-tac-toe_3d_field article.item1 { top:15.8%;}
+    .tic-tac-toe_3d_field article.item2 { top:-15.8%;}
+        .tic-tac-toe_3d_field article.item3 { left:30.6%;}
+            .tic-tac-toe_3d_field article.item4 { right:30.6%;}
+
+            article::before, article::after {content: "";}
+
+article::before{
+    box-shadow: inset -30px 0px 30px 10px rgb(0, 0, 0);
+    transform: rotateY(90deg) translateZ(-24px) translateX(24px);}
+article::after {
+        box-shadow: inset -30px 0px 30px 10px rgb(0, 0, 0);
+    transform: rotateY(90deg) translateZ(24px) translateX(24px);}
