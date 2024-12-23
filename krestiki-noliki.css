@@ -41,7 +41,7 @@ body .tic-tac-toe_3d_field {
     justify-content: center;
     align-items: center;
     transition:  all 0.3s ease-in-out;
-    background-image: url("/image-project/krestiki-noliki.jpg");
+    background-image: url("./image-project/krestiki-noliki.jpg");
     object-fit:fill;
     padding: 2%;
     width: 600px;
@@ -51,7 +51,7 @@ body .tic-tac-toe_3d_field {
 .tic-tac-toe_3d_field .side-for-main {
     transition:all 0.3s ease-in-out;
     transform: translateZ(0px) rotateY(90deg);
-    background-image: url("/image-project/krestiki-noliki.jpg");
+    background-image: url("./image-project/krestiki-noliki.jpg");
     position: absolute;
     width: calc(48px * 2);
     height: 100%;
@@ -68,7 +68,7 @@ body .tic-tac-toe_3d_field {
     position: absolute;
     width: 50%;
     height: 100%;
-    background-image: url("/image-project/krestiki-noliki.jpg");
+    background-image: url("./image-project/krestiki-noliki.jpg");
 }
 .tic-tac-toe_3d_field .side-for-main:nth-child(5) {
     box-shadow: inset 0 0 50px 10px black;
@@ -119,6 +119,7 @@ body .tic-tac-toe_3d_field {
    box-shadow: inset 0 0 100px 10px black,
    0 0 10px 10px black;
    box-sizing: border-box;
+   cursor: pointer;
 }
 article, article::before, article::after {
     height: 100%;
@@ -126,7 +127,7 @@ article, article::before, article::after {
     box-shadow: inset 0 0 10px 1px rgb(40, 40, 40);
     transform-style: preserve-3d;
     position: absolute;
-    background-image: url("/image-project/steel\ 4k.jpg");
+    background-image: url("./image-project/steel\ 4k.jpg");
     background-size:cover;
     transform: translateZ(24px);
 }
