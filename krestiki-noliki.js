@@ -33,10 +33,12 @@ document.addEventListener("DOMContentLoaded", (event)=> {
                         animationIsEnd = true;
                         mainField.style.transform = "rotate(0deg) scale(1.3)";
                         document.body.style.boxShadow = "inset 0 0 100px 20px black";
-                        gameName.classList.add("bluring-for-main-hover");
+                        gameName.querySelector("p").classList.add("bluring-for-main-hover");
                         
                         mainField.querySelectorAll("div").forEach(element => {
-                            element.classList.add("hovering-for-square");
+                            if (element.children.length === 0 && element.textContent.trim() === "") {
+                                element.classList.add("hovering-for-square");
+                            }
                         });
                     });
                     mainField.addEventListener("mouseleave", () => {
@@ -45,32 +47,95 @@ document.addEventListener("DOMContentLoaded", (event)=> {
                         mainField.style.transform = "";
                         mainField.style.background = "";
                         document.body.style.boxShadow = "";
-                        gameName.classList.remove("bluring-for-main-hover");
+                        gameName.querySelector("p").classList.remove("bluring-for-main-hover");
+
                         
                     });
                     gameName.style.opacity = "1";
                     gameName.style.left = "10%";
-                    gameName.style.top = "20%";
+                    gameName.style.top = "10%";
+
+
                     
                     // logic of game
                     const cubicProperty = {
-                        position: "absolute",
-                            width:"100px",
-                                aspectRatio: "1/1",
-                                    background: "red",
-                                    left: "10%",
-                                     top: "10%",
-                                     zIndex: "100"
+                        width:"160px",
+                        height:"160px",
+                        position: "relative",
+                        zIndex: "100",
+                        opacity: "0",
+                        transition: "all 0.3s ease-out",
+                        backgroundPosition: "contain",
+                        transform:"translateZ(188px)",
+                        display:"flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundImage:  "url('/image-project/krestiki-noliki.jpg')",
+                        boxShadow: "inset 0 0 20px 10px black"
+                                            
 
                     }
-                    let counterOfquares = 0;
+                    const cubicSideProperty = {
+                        position: "absolute",
+                        transition: "all 0.3s ease-out",
+                        transformStyle:"preserve-3d",
+                        width: "50%",
+                        height: "inherit",
+                        backgroundImage:"inherit",
+                        transform: "translateZ(-40px) rotateY(90deg)"
+                    }
                     
-                    while (counterOfquares < 9) {
+                    let emptyFields = mainField.children.length;
 
+                const xToe = gameName.querySelector(".X-toe ");
+                const oToe = gameName.querySelector(".O-toe ");
+
+                    mainField.querySelectorAll(".square").forEach((element, index)=> {
+                        element.style.transformStyle = "preserve-3d";
+                        
                         const cubic = document.createElement("div");
+                        cubic.style.transformStyle = "preserve-3d";
+                        cubic.className = "occupied-square";
                         Object.assign(cubic.style, cubicProperty);
-                        body.appendChild(cubic);
 
+                        const leftSide = document.createElement("div");
+                        leftSide.style.left = "-25%";
+                        Object.assign(leftSide.style, cubicSideProperty);
+
+
+                        const rightSide = document.createElement("div");
+                        rightSide.style.right = "-25%";
+
+                        Object.assign(rightSide.style, cubicSideProperty);
+
+
+
+
+                        let isClicked = false;
+                        element.addEventListener("click", ()=> {
+                            element.classList.remove("hovering-for-square");
+                                if (isClicked) return;
+                                 element.appendChild(cubic);
+                                
+                                if(emptyFields % 2 == 0 || emptyFields == 0) {
+                                    cubic.innerHTML = xToe.innerHTML;
+                                    cubic.appendChild(leftSide);
+                                    cubic.appendChild(rightSide);
+                                }
+                                else if (emptyFields % 2 != 0 || emptyFields != 0) {
+                                    cubic.innerHTML = oToe.innerHTML;
+                                    cubic.appendChild(leftSide);
+                                    cubic.appendChild(rightSide);
+                                }
+                                setTimeout(()=> {
+                                    cubic.style.opacity = "1";
+                                    cubic.style.transform ="translateZ(58px)";
+                                  
+                                },200);
+                               emptyFields--;
+                                isClicked = true;
+                            });
+                    });
 
                         // кожному елементу назначити клас з відповідним номером для подальшого реалізування внесенння його в ігрове поле (square)
 
@@ -80,23 +145,9 @@ document.addEventListener("DOMContentLoaded", (event)=> {
 
                         // реалізувати кінець при перемозі чи нічиї та запропонувати заграти ще раз.
 
-
-                        if(mainField.querySelector("div")) {
-
-                        }
-                        
-                        counterOfquares++;
-                        
-                    }
-                    
-                    
-                    
-                });
                 
                 
-                
-                
-            }, 500);
+            }, 1700);
         });
         
         
@@ -107,7 +158,7 @@ document.addEventListener("DOMContentLoaded", (event)=> {
 
 
 
-
+});
 
 
 
