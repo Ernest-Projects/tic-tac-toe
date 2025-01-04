@@ -9,46 +9,54 @@
 </head>
 <body>
     
+
+
+    <button class="reset-button" onclick="resetGame()">Reset</button>
     
     <header class= "hed">
         
         Made by Ernest
         
     </header>
+
+
+        <header class= "name" id = "gameName">
+            
+            <p>
+                Tic tac toe game
     
-    <header class= "name" id = "gameName">
-        
-        <p>
-            Tic tac toe game
+            </p>
+            
+            
+        </header>
+        <section class ="field-for-cubs">
+    
+            <div class = "X-toe visual-toe play-field-for-square ">
+            <svg viewBox = "0 0 100 100" class=" transition-out" height ="100%" width =" 100%" >
+            <path d = "M20 20 L80 80 " stroke-linecap = "round" stroke = "white" stroke-width = "10"> </path>    
+            <path d = "M20 80 L80 20 " stroke-linecap = "round" stroke = "white" stroke-width = "10"> </path>    
+            </svg> 
+             <div class = "right-side  transition-out"> </div>
+            <div class = "bottom-side  transition-out"> </div>
 
-        </p>
+            <p class = "X-counter counters"> -0</p>
+            
+        </div>
         
-            <section class ="field-for-cubs">
-        
-                <div class = "X-toe visual-toe play-field-for-square">
-                <svg viewBox = "0 0 100 100" height ="100%" width =" 100%" >
-                <path d = "M20 20 L80 80 " stroke-linecap = "round" stroke = "white" stroke-width = "10"> </path>    
-                <path d = "M20 80 L80 20 " stroke-linecap = "round" stroke = "white" stroke-width = "10"> </path>    
-                </svg> 
-                 <div class = "top-side"> </div>
-                <div class = "left-side"> </div>
-                </div>
-
-                <div class = "O-toe visual-toe play-field-for-square">
-                      <svg viewBox = "0 0 100 100" width ="100%" heigth ="100%">
-                        <defs>
-                            <filter id="drop-shadow" x="-50%" y="-50%" width="200%" height="200%">
-                                <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="black" flood-opacity="0.5"/>
-                            </filter>
-                        </defs>
-                          <circle cy =  "50" fill = "none" cx = "50" stroke ="white" stroke-width ="10" r ="30"/>   
-                      </svg>
-                      <div class = "top-side"> </div>
-                      <div class = "left-side"> </div>
-                     </div>
-            </section>
-        
-    </header>
+        <div class = "O-toe visual-toe play-field-for-square  transition-out">
+            <svg viewBox = "0 0 100 100" width ="100%" class="  transition-out" heigth ="100%">
+                <defs>
+                    <filter id="drop-shadow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="black" flood-opacity="0.5"/>
+                    </filter>
+                </defs>
+                <circle cy =  "50" fill = "none" cx = "50" stroke ="white" stroke-width ="10" r ="30"/>   
+            </svg>
+            <div class = "right-side  transition-out"> </div>
+            <div class = "bottom-side  transition-out"> </div>
+            <p class = "O-counter counters">0-</p>
+                 </div>
+        </section>
     
 
 
@@ -63,19 +71,13 @@
  
         
         <section class = "main-field">
-            <div class="square"> <div class ="left-s"></div> <div class ="top-s"></div></div>
-            <div class="square"> <div class ="left-s"></div> <div class ="top-s"></div></div>
-
-            <div class="square"> <div class ="left-s"></div> <div class ="top-s"></div></div>
-            <div class="square"> <div class ="left-s"></div> <div class ="top-s"></div></div>
-            <div class="square"> <div class ="left-s"></div> <div class ="top-s"></div></div>
-            <div class="square"> <div class ="left-s"></div> <div class ="top-s"></div></div>
-            <div class="square"> <div class ="left-s"></div> <div class ="top-s"></div></div>
-            <div class="square"> <div class ="left-s"></div> <div class ="top-s"></div></div>
-            <div class="square"> <div class ="left-s"></div> <div class ="top-s"></div></div>
+          
         </section>
 
 
+
+
+        <!-- перенести square в джс (динамічно створювати їх та очищувати .main-field (playField)) -->
 
    
     </main>
