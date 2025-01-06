@@ -15,9 +15,8 @@ for (let i = 0; i < emptyFields; i++) {
 const squareCollection = playField.querySelectorAll(":scope > .square");
 const squares = Array.from(playField.children);
 
-squares.forEach((square, index) => {
-    square.setAttribute("data-value", index % 2 === 0 ? "X" : "O");
-});
+
+
 
 const header = document.querySelector(".hed");
 const gameName = document.querySelector(".name");
@@ -34,8 +33,7 @@ const oToe = counterField.querySelector(".O-toe");
 const firstVisual = counterField.querySelector(".visual-toe:nth-child(1)");
 const secondVisual = counterField.querySelector(".visual-toe:nth-child(2)");
 
-const leftSide = document.createElement("div");
-const rightSide = document.createElement("div");
+let isXturn = true;
 
 let Xcounter = 0;
 let Ocounter = 0;
@@ -59,7 +57,7 @@ function setCubicProperty(left, right, front) {
         transformStyle: "preserve-3d",
         filter: ""
     };
-
+    
     const cubicSideProperty = {
         position: "absolute",
         transition: "all 0.3s ease-out",
@@ -69,13 +67,13 @@ function setCubicProperty(left, right, front) {
         backgroundImage: "inherit",
         transform: "translateZ(-40px) rotateY(90deg)"
     };
-
+    
     [left, right].forEach(side => {
         Object.assign(side.style, cubicSideProperty);
     });
-
+    
     Object.assign(front.style, cubicProperty);
-
+    
 }
 
 const winningCombinations = [
@@ -98,62 +96,105 @@ function setPropertyForScore(first, second) {
 
 function resetGame() {
     playField.innerHTML = "";
-
+    
     if (animationIsEnd) {
         setPropertyForScore(secondVisual, firstVisual);
     }
-
+    
     for (let i = 0; i < 9; i++) {
         const square = document.createElement("div");
         square.className = "square";
         playField.appendChild(square);
     }
-
+    
     emptyFields = 9; 
     Ocounter = 0;
     Xcounter = 0;
-
+    
     counterField.querySelector(".X-counter").textContent = "-0";
     counterField.querySelector(".O-counter").textContent = "0-";
-
+    
     activateGame();
 }
+let logs = new Map(); 
+let counter = 0;
+function updateLog(index, symbol, fieldValue) {
 
- async function activateGame() {
+    logs.set(index, symbol);
+
+    let mainAnimations = mainField.getAnimations();
+
+    mainAnimations.forEach(animation => {
+
+    });
+
+    console.clear();
+
+    console.group("Field States:");
+    console.log(`Quantity of empty squares: ${fieldValue}`);
+    console.groupEnd();
+
+    counter++;
+
+    console.group(`Square States: (${counter})`);
+
+    for (const [key, value] of logs) {
+        console.log(`Element: ${key}; Symbol: ${value}`);
+    }
+    console.groupEnd();
+    
+}
+
+async function activateGame() {
     playField.querySelectorAll(".square").forEach((element, index) => {
         let isClicked = false; 
         const cubic = document.createElement("div");
         cubic.className = `occupied-square cubic playfield${index + 1}`;
-
+        
+        
+        const leftSide = document.createElement("div");
+        const rightSide = document.createElement("div");
         setCubicProperty(leftSide, rightSide, cubic);
 
         rightSide.style.right = "-25%";
         leftSide.style.left = "-25%";
 
-
+        
         element.addEventListener("click", async () => {
             if (isClicked) return; 
-
+            
             if (element.querySelector(".X-counter")) {
                 counterField.querySelector(".X-counter").textContent = `-${Xcounter}`;
             } else {
                 counterField.querySelector(".O-counter").textContent = `${Ocounter}-`;
             }
-
+            
             element.classList.remove("hovering-for-square");
             element.appendChild(cubic);
-
-            if (emptyFields % 2 == 0 || emptyFields == 0) {
-                cubic.innerHTML = oToe.innerHTML;
-                Ocounter++;
-                setPropertyForScore(secondVisual, firstVisual);
-            } else if (emptyFields % 2 != 0 || emptyFields != 0) {
+            
+            if (isXturn) {
+               
                 cubic.innerHTML = xToe.innerHTML;
                 Xcounter++;
+                element.setAttribute("data-value", "X");
                 setPropertyForScore(firstVisual, secondVisual);
+                
+                isXturn = false;
+            } else {
+                cubic.innerHTML = oToe.innerHTML;
+                Ocounter++;
+                element.setAttribute("data-value", "O");
+                setPropertyForScore(secondVisual, firstVisual);
+                isXturn = true;
             }
+            updateLog(index, element.getAttribute("data-value"), emptyFields - 1);
+
+
             cubic.appendChild(leftSide);
             cubic.appendChild(rightSide);
+            
+            isClicked = true;
+            emptyFields--;
 
             await delayConstruction(200); //
             cubic.querySelector("p").style.opacity = "0";
@@ -161,33 +202,37 @@ function resetGame() {
                     opacity: "1",
                     transform: "translateZ(58px)"
                 });
+                
 
-
-                let stopDelay = delayConstruction(3700);
-
-            updateAnimation();
-            emptyFields--;
-
-            if (element.querySelector(".X-counter")) {
-                counterField.querySelector(".X-counter").textContent = `-${Xcounter}`;
+                let stopDelay = delayConstruction(1100); //
+                
+                
+                if (element.querySelector(".X-counter")) {
+                    counterField.querySelector(".X-counter").textContent = `-${Xcounter}`;
             } else {
                 counterField.querySelector(".O-counter").textContent = `${Ocounter}-`;
             }
             
-            isClicked = true;
-
             await stopDelay; //
+            
+            if (emptyFields === 0) {
+                mainField.classList.add(".full-rotate"); 
+                     resetGame();
 
-                if (emptyFields === 0) {
-                    mainField.classList.add(".full-rotate"); 
-                    resetGame(); 
+                    console.clear();
+                    logs.clear();
+
+                    counter = 0;
+
+                   for(let element of playField.children) {
+                    element.removeAttribute("data-value");
+
+                   }
                 }  
-
         });
     });
 }
 
-function updateAnimation() {}
 
 const resetButton = document.querySelector(".reset-button");
 
@@ -201,24 +246,23 @@ mainField.appendChild(fragment);
 
 
 async function gameStyleStructure() {
-
+    
     await delayConstruction(200); //
     header.classList.add("animation-head");
-
+    
     await delayConstruction(1000); //
         header.addEventListener("animationend",async () => {
             header.style.userSelect = "none";
             mainField.style.opacity = "1";
-    
+            
             await delayConstruction(700); //
-
-                mainField.classList.add("animation-main-field-forwards");
-                mainField.addEventListener("animationend", async () => {
-                    resetButton.style.opacity = "1";
-                    mainField.classList.remove("animation-main-field-forwards");
-                    mainField.classList.add("transform-main-field");
-    
-                    Object.assign(mainField.style, {
+            mainField.classList.add("animation-main-field-forwards");
+            mainField.addEventListener("animationend", async () => {
+                resetButton.style.opacity = "1";
+                mainField.classList.remove("animation-main-field-forwards");
+                mainField.classList.add("transform-main-field");
+                
+                Object.assign(mainField.style, {
                         transform: "rotateY(-40deg) rotateX(10deg)",
                         left: "20%"
                     });
@@ -235,14 +279,14 @@ async function gameStyleStructure() {
                         mainField.style.transform = "rotate(0deg) scale(1.3)";
                         document.body.style.boxShadow = "inset 0 0 100px 20px black";
                         gameName.querySelector("p").classList.add("bluring-for-main-hover");
-    
+                        
                         playField.querySelectorAll(".square").forEach((element) => {
                             if (element.children.length === 0 && element.textContent.trim() === "") {
                                 element.classList.add("hovering-for-square");
                             }
                         });
                     });
-    
+                    
                     mainField.addEventListener("mouseleave", () => { 
                         animationIsEnd = false;
     
