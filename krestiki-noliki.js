@@ -110,6 +110,11 @@ function resetGame() {
     emptyFields = 9; 
     Ocounter = 0;
     Xcounter = 0;
+
+    console.clear();
+    logs.clear();
+
+    isXturn = true;
     
     counterField.querySelector(".X-counter").textContent = "-0";
     counterField.querySelector(".O-counter").textContent = "0-";
@@ -219,8 +224,6 @@ async function activateGame() {
                 mainField.classList.add(".full-rotate"); 
                      resetGame();
 
-                    console.clear();
-                    logs.clear();
 
                     counter = 0;
 
