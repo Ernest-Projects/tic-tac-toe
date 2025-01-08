@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<title>Tic tac!</title>
+    <link rel="icon" type ="image/png" href="/image-project/picture_for_title.png">
 
     <link rel="stylesheet" href="./krestiki-noliki.css">
 </head>
@@ -11,36 +12,22 @@
     
 
 
-    <button class="reset-button" onclick="resetGame()">Reset</button>
+    <button class="reset-button" onclick="fullResetGame()">Reset
+        <div class ="reset-window transition-out">Really want to reset all game?</div>
+    </button>
     
-    <header class= "hed">
-        
-        Made by Ernest
-        
-    </header>
+    <header class= "hed">Made by Ernest</header>
+        <header class= "name"><p> Tic tac toe game </p> </header>
 
-
-        <header class= "name" id = "gameName">
-            
-            <p>
-                Tic tac toe game
-    
-            </p>
-            
-            
-        </header>
         <section class ="field-for-cubs">
-    
             <div class = "X-toe visual-toe play-field-for-square ">
             <svg viewBox = "0 0 100 100" class=" transition-out" height ="100%" width =" 100%" >
-            <path d = "M20 20 L80 80 " stroke-linecap = "round" stroke = "white" stroke-width = "10"> </path>    
-            <path d = "M20 80 L80 20 " stroke-linecap = "round" stroke = "white" stroke-width = "10"> </path>    
+                <path d = "M20 20 L80 80 " stroke-linecap = "round" stroke = "white" stroke-width = "10"> </path>    
+                <path d = "M20 80 L80 20 " stroke-linecap = "round" stroke = "white" stroke-width = "10"> </path>    
             </svg> 
-             <div class = "right-side  transition-out"> </div>
+            <div class = "right-side  transition-out"> </div>
             <div class = "bottom-side  transition-out"> </div>
-
             <p class = "X-counter counters"> -0</p>
-            
         </div>
         
         <div class = "O-toe visual-toe play-field-for-square  transition-out">
@@ -55,30 +42,22 @@
             <div class = "right-side  transition-out"> </div>
             <div class = "bottom-side  transition-out"> </div>
             <p class = "O-counter counters">0-</p>
-                 </div>
+        </div>
         </section>
     
 
 
     <main class ="tic-tac-toe_3d_field">
+        
+        
+        
+        
         <div class = "side-for-main"></div>
         <div class = "side-for-main"></div>
         <div class = "side-for-main"></div>
         <div class = "side-for-main"></div>
         <div class = "side-for-main bg"></div>
-
-
- 
-        
-        <section class = "main-field">
-          
-        </section>
-
-
-
-
-        <!-- перенести square в джс (динамічно створювати їх та очищувати .main-field (playField)) -->
-
+        <section class = "main-field">        </section>
    
     </main>
  
