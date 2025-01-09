@@ -14,7 +14,7 @@ const squares = Array.from(playField.children);
 let previousGames = {};
 const header = document.querySelector(".hed");
 const gameName = document.querySelector(".name");
-let animationIsEnd = false;
+let isHovered = true;
 let ultimatePointer = false;
 const mainField = document.querySelector(".tic-tac-toe_3d_field");
 const counterField = document.querySelector(".field-for-cubs");
@@ -53,7 +53,15 @@ function setPropertyForScore(first, second) {
     Object.assign(second.style, {
         filter: "blur(0rem)",transform: "scale(1.1)"});
 }
-function fullResetGame() {
+
+
+function startHover () {
+    isHovered = true;
+}
+function endHover() {
+    isHovered = false;
+}
+async function fullResetGame() {
     console.clear();
     console.log(`%cNew game is started!`, "color: grey; font-style: italic");
     gameCounter = 1;
@@ -62,7 +70,7 @@ function fullResetGame() {
     counter = 0;
     logs.clear();
    Object.keys(previousGames).forEach(key => delete previousGames[key])
-    if (animationIsEnd) {setPropertyForScore(secondVisual, firstVisual);}
+    // if (isHovered) {setPropertyForScore(secondVisual, firstVisual);}
     for (let i = 0; i < 9; i++) {
         const square = document.createElement("div");
         square.className = "square";
@@ -72,32 +80,51 @@ function fullResetGame() {
     Ocounter = 0;
     Xcounter = 0;
     isXturn = true;
+    activateGame();
+    await delayConstruction(300); //
     counterField.querySelector(".X-counter").textContent = "-0";
     counterField.querySelector(".O-counter").textContent = "0-";
-    activateGame();
-}
-let squareCounter = 1;
 
-function partialResetGame () {
+    document.body.classList.add(".visible");
+    await delayConstruction(1000); //
+    document.body.classList.remove(".visible");
+    
+    
+}
+let squareCounter = 0;
+
+async function partialResetGame () {
     playField.innerHTML = "";
     logs.clear();
-    if (animationIsEnd) {setPropertyForScore(secondVisual, firstVisual);}
     for (let i = 0; i < 9; i++) {
         const square = document.createElement("div");
         square.className = "square";
         playField.appendChild(square);
     }
-    emptyFields = 9; 
-    Ocounter = 0;
-    Xcounter = 0;
     isXturn = true;
+    emptyFields = 9; 
     squareCounter = 0;
+    await delayConstruction(500);
+
+        [firstVisual.style, secondVisual.style].forEach(style => {
+            Object.assign(style, {
+                filter: "blur(0rem)", transform: "scale(1)" });
+            });
+    for (child of playField.children) {
+        child.classList.add("hovering-for-square");
+
+    }
+    
+    
+    mainField.style.pointerEvents = "auto";
     activateGame();
+    mainField.style.pointerEvents = "auto";
 
 }
 
 function updateSquareStates(index, symbol) {
     logs.set(index, symbol);
+    squareCounter++;
     
     let logout = "";
     let isfirst = true;
@@ -110,7 +137,6 @@ function updateSquareStates(index, symbol) {
         }
         logout += `{Square: ${key + 1}, Symbol: ${value}} => `;
 
-        squareCounter++;
     }
     console.log(`%c${logout}`, "font-size: 1.2rem;", "color: rgb(188, 93, 195); font-size:1.2rem", "font-size: 1.2rem; color:white");
     console.groupEnd();
@@ -121,6 +147,7 @@ function updateFieldState(fieldValue) {
     console.clear();
     console.group(`%cField States:`, "font-size: 1.5rem; ");
     console.log(`%cQuantity of empty squares: %c${fieldValue}`, "font-size: 1.2rem; ", "color:red; font-size: 1.2rem");
+
     console.groupEnd();
 }
 function updateAmimationStates (name,field) {
@@ -130,8 +157,9 @@ function updateAmimationStates (name,field) {
     });
 }
 let counter = 0;
-function saveGame (message, color) {
+async function saveGame (message, color) {
     console.clear();
+
     console.group("%cHistory of games:", "font-size: 3rem;");
     let quantity = 1;
     previousGames[counter] = new Map(logs);
@@ -149,8 +177,17 @@ function saveGame (message, color) {
     counter++;
     logs.clear();
     console.groupEnd();
+
+    document.body.style.opacity = "0";
+    console.log("here!");
+
+    await delayConstruction(1000); //
+    document.body.style.opacity = "1";
+
+
 }
 async function activateGame() {
+
     playField.querySelectorAll(".square").forEach((element, index) => {
         let isClicked = false; 
         const cubic = document.createElement("div");
@@ -160,55 +197,63 @@ async function activateGame() {
         setCubicProperty(leftSide, rightSide, cubic);
         rightSide.style.right = "-25%";
         leftSide.style.left = "-25%";
-        element.addEventListener("click", async () => {
-            if (isClicked) return; 
-            if (element.querySelector(".X-counter")) {
-                counterField.querySelector(".X-counter").textContent = `-${Xcounter}`;
-            } else {
-                counterField.querySelector(".O-counter").textContent = `${Ocounter}-`;
-            }
-            element.classList.remove("hovering-for-square");
-            element.appendChild(cubic);
-            if (isXturn) {
-                cubic.innerHTML = xToe.innerHTML; Xcounter++;
-                element.setAttribute("data-value", "X");
-                setPropertyForScore(firstVisual, secondVisual);
-                isXturn = false;
-            } else {
-                cubic.innerHTML = oToe.innerHTML; Ocounter++;
-                element.setAttribute("data-value", "O");
-                setPropertyForScore(secondVisual, firstVisual);
-                isXturn = true;
-            }
-            updateFieldState(emptyFields - 1);
-            updateSquareStates(index, element.getAttribute("data-value"));
-            cubic.appendChild(leftSide); cubic.appendChild(rightSide);
-           
-            isClicked = true; emptyFields--;
-            await delayConstruction(200); //
-            cubic.querySelector("p").style.opacity = "0";
-                Object.assign(cubic.style, {
-                    opacity: "1", transform: "translateZ(58px)" });
-                let stopDelay = delayConstruction(1500); //
-            if (element.querySelector(".X-counter")) {
-                counterField.querySelector(".X-counter").textContent = `-${Xcounter}`;
-            } else {
-                counterField.querySelector(".O-counter").textContent = `${Ocounter}-`;
-            }
-
-          
-            await stopDelay; //
-            if (emptyFields === 0) {
-                mainField.classList.add(".full-rotate"); 
-                saveGame("draw", "orange");
-                partialResetGame();
-                   for(let element of playField.children) {
-                    element.removeAttribute("data-value");}
-                }  
-        });
+            element.addEventListener("click", async () => {
+                if (isClicked) return; 
+                console.log(`element ${index}  clicked!`);
+                if (element.querySelector(".X-counter")) {
+                    counterField.querySelector(".X-counter").textContent = `-${Xcounter}`;
+                } else {
+                    counterField.querySelector(".O-counter").textContent = `${Ocounter}-`;
+                }
+                element.classList.remove("hovering-for-square");
+                element.appendChild(cubic);
+                if (isXturn) {
+                    cubic.innerHTML = xToe.innerHTML; Xcounter++;
+                    element.setAttribute("data-value", "X");
+                    setPropertyForScore(firstVisual, secondVisual);
+                    isXturn = false;
+                } else {
+                    cubic.innerHTML = oToe.innerHTML; Ocounter++;
+                    element.setAttribute("data-value", "O");
+                    setPropertyForScore(secondVisual, firstVisual);
+                    isXturn = true;
+                }
+                updateFieldState(emptyFields - 1);
+                updateSquareStates(index, element.getAttribute("data-value"));
+                cubic.appendChild(leftSide); cubic.appendChild(rightSide);
+               
+                isClicked = true; emptyFields--;
+                await delayConstruction(200); //
+                cubic.querySelector("p").style.opacity = "0";
+                    Object.assign(cubic.style, {
+                        opacity: "1", transform: "translateZ(58px)" });
+                    let stopDelay = delayConstruction(2500); //
+                if (element.querySelector(".X-counter")) {
+                    counterField.querySelector(".X-counter").textContent = `-${Xcounter}`;
+                } else {
+                    counterField.querySelector(".O-counter").textContent = `${Ocounter}-`;
+                }
+    
+              
+                await stopDelay; //
+                if (emptyFields === 0) {
+                    mainField.classList.add(".full-rotate"); 
+                    saveGame("draw", "orange");
+                    partialResetGame();
+                       for(let element of playField.children) {
+                        element.removeAttribute("data-value");}
+                    }  
+            });
     });
 }
 const resetButton = document.querySelector(".reset-button");
+resetButton.addEventListener("click", async ()=> {
+    document.body.style.opacity = "0";
+    await delayConstruction(1000);
+    document.body.style.opacity = "1";
+
+
+});
 for (let i = 0; i < 4; i++) {
     const navElement = document.createElement("article");
     navElement.classList.add(`item${i + 1}`);
@@ -233,11 +278,12 @@ async function gameStyleStructure() {
                         transform: "rotateY(-40deg) rotateX(10deg)", left: "20%" });
     
                     mainField.addEventListener("mouseenter", () => {
-                        animationIsEnd = true;
-                        if (Xcounter > Ocounter) {
-                            setPropertyForScore(firstVisual, secondVisual);
-                        } else if (Xcounter === Ocounter) {
+                        startHover();
+
+                        if (isXturn) {
                             setPropertyForScore(secondVisual, firstVisual);
+                        } else  {
+                            setPropertyForScore(firstVisual, secondVisual);
                         }
                         mainField.style.transform = "rotate(0deg) scale(1.3)";
                         document.body.style.boxShadow = "inset 0 0 100px 20px black";
@@ -248,7 +294,8 @@ async function gameStyleStructure() {
                         });
                     });
                     mainField.addEventListener("mouseleave", () => { 
-                        animationIsEnd = false;
+                        endHover();
+
                         [firstVisual.style, secondVisual.style].forEach(style => {
                             Object.assign(style, {
                                 filter: "blur(0rem)", transform: "scale(1)" });

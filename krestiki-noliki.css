@@ -71,6 +71,10 @@ body .name {
     transition:  all .3s ease-out;
 }
 
+.visible {
+    opacity: 0;
+}
+
 .bluring-for-main-hover {filter:blur(1rem)}
 
 @keyframes opacity {
