@@ -1,22 +1,7 @@
 
 
-@media (min-width: 1780px) {
 
-    .visual-toe:nth-child(1), .visual-toe:nth-child(2) {
-        transform: rotateY(20deg);
-    }
-    
-}
-
-@media (max-height: 780px) {
-
-    .name p {
-        top: 0%;
-    }
-}
-
-
-body {
+body::after, body, .game-window {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -25,13 +10,17 @@ body {
     margin: 0;
     height: 100vh;
     width: 100%;
+    font-family: "Poppins", sans-serif;
     transform-style: preserve-3d;
     perspective:3000px;
     transform-origin: 100% 50%;
     transform: scale(1);
+    user-select: none;
     overflow: hidden;
     transition: all 0.3s ease-out;
+    
 }
+
 
 body .hed, .name {
     font-size: 3rem;
@@ -47,13 +36,23 @@ body .hed, .name {
     place-self: center;
     justify-content: center;
     transform-style: preserve-3d;
+    pointer-events:  none;
 }
-body .name {
-    left:-60%;
-    top:20%;
+ .name {
+  padding: 0;
+  margin: 0;
+    position:  absolute;
+    background: transparent;
+    color: white;
+    width: fit-content;
+    font-size: 4.4rem;
+    transform: rotateZ(-45deg);
 }
 .name p {
     transition: all 0.3s ease-in-out;
+    padding: 0;
+    color: white;
+    margin: 0;
 }
 
 .animation-head {
@@ -115,6 +114,8 @@ body .name {
 .tic-tac-toe_3d_field .side-for-main:not(:nth-child(5))::after, .tic-tac-toe_3d_field .side-for-main:not(:nth-child(5))::before {
     content: "";
     position: absolute;
+    transition:all 0.3s ease-in-out;
+
     width: 50%;
     height: 100%;
     background-image: url("./image-project/krestiki-noliki.jpg");
@@ -164,9 +165,12 @@ body .name {
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
             gap:48px;
+    transition:all 0.3s ease-in-out;
+
         }
         .main-field {
             transform-style: preserve-3d;
+            transition:all 0.3s ease-in-out;
 
         }
         .main-field > .square { 
@@ -368,9 +372,11 @@ justify-content: center;
 }
 
 .reset-window {
+    z-index: 100;
     width: 400%;
     height: 150%;
     left: 300%;
+    font-family: "Poppins", sans-serif;
     top:-300%;
     color: white;
     display: flex;
@@ -382,9 +388,6 @@ justify-content: center;
   position:absolute;
   background-image: url("/image-project/krestiki-noliki.jpg");
 }
-.reset-button:hover .reset-window {
-    top: 0%;
-    
-}
+
 
 
