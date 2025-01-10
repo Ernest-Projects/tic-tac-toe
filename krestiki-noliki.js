@@ -60,14 +60,7 @@ async function showMessage(text = "") {
     message.style.transform = "translateX(-100px)";
     message.textContent = text;
     Object.assign(message.style, {
-        position: "absolute",
-        opacity: "1",
-        color: "black",
-        alignText: "center",
-        transition: "all 0.3s ease-out",
-        fontSize: "5rem",
-        zIndex: "100",
-        pointerEvents: "none"
+        position: "absolute",opacity: "1",color: "black",alignText: "center",transition: "all 0.3s ease-out",fontSize: "5rem",zIndex: "100",pointerEvents: "none"
     });
     await delayConstruction(200); //
     message.style.transform = "translateX(100px)";
