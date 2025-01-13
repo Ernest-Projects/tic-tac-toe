@@ -1,38 +1,64 @@
 const MAIN = document.querySelector(".game-window");
+const mainField = document.querySelector(".tic-tac-toe_3d_field");
+const counterField = document.querySelector(".field-for-cubs");
+const playField = document.querySelector(".main-field");
 
 function delayConstruction(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 let emptyFields = 9;
-const playField = document.querySelector(".main-field");
-const gameName = document.querySelector(".name");
 
-for (let i = 0; i < emptyFields; i++) {
-    const square = document.createElement("div");
-    square.className = "square";
-    playField.appendChild(square);
+function createPlaySquares() {
+    for (let i = 0; i < emptyFields; i++) {
+        const square = document.createElement("div");
+        square.className = "square";
+        playField.appendChild(square);
+    }
 }
+function createField() {
+    const fragment = document.createDocumentFragment();
+    for (let i = 0; i < 4; i++) {
+        const navElement = document.createElement("article");
+        navElement.classList.add(`item${i + 1}`);
+        fragment.appendChild(navElement);
+    }
+    mainField.appendChild(fragment);
+}
+function seeCurrentlyWidth() {
+        const infoWindow = document.createElement("p");
+        setStylesProperties([infoWindow],["position", "width", "height",  "left", "bottom", "fontSize", "margin"],
+            ["absolute", "fit-content", "fit-content","0%", "0rem", "1.5rem", "1rem"]);
+            infoWindow.textContent = `width: ${document.body.clientWidth}px, min: 1450px`;
+            document.body.appendChild(infoWindow);
+        window.addEventListener("resize", (event)=>{
+        infoWindow.textContent = `width: ${document.body.clientWidth}px, min: 1450px`;
+    });
+}
+function setAudioGame(link) {
+    const audioElement = new Audio(link);
+    audioElement.currentTime = 0;    
+    audioElement.play();
+    audioElement.volume = 0.1;
+}
+seeCurrentlyWidth();
+createPlaySquares();
+createField();
+
+let previousGames = {};
+let isXturn = true, isCalled = false, Xcounter = 0,  Ocounter = 0, squareCounter = 0, counter = 0,gameCounter = 1;
+let logs = new Map();
+
+const audioElement = new Audio();
 
 const squareCollection = playField.querySelectorAll(":scope > .square");
-const squares = Array.from(playField.children);
-let previousGames = {};
 const header = document.querySelector(".hed");
-let ultimatePointer = false;
-const mainField = document.querySelector(".tic-tac-toe_3d_field");
-const counterField = document.querySelector(".field-for-cubs");
+const gameName = document.querySelector(".name");
 const xToe = counterField.querySelector(".X-toe");
 const oToe = counterField.querySelector(".O-toe");
 const firstVisual = counterField.querySelector(".visual-toe:nth-child(1)");
 const secondVisual = counterField.querySelector(".visual-toe:nth-child(2)");
-let isXturn = true, isCalled = false, Xcounter = 0,  Ocounter = 0, squareCounter = 0, counter = 0,gameCounter = 1;
 const message = document.createElement("p");
-message.style.transform = "translateX(-100px)";
-document.body.appendChild(message);
-
-const resetWindow = document.querySelector(".reset-window");
-const fragment = document.createDocumentFragment();
-let logs = new Map();
 
 function setCubicProperty(left, right, front) {
     const cubicProperty = {
@@ -44,26 +70,39 @@ function setCubicProperty(left, right, front) {
     [left, right].forEach(side => Object.assign(side.style, cubicSideProperty));
     Object.assign(front.style, cubicProperty);
 }
-
 const winningCombinations = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
     [0, 3, 6], [1, 4, 7], [2, 5, 8],
     [0, 4, 8], [2, 4, 6]
 ];
-
-function setPropertyForScore(first, second) {
-    Object.assign(first.style, { filter: "blur(1rem)", transform: "scale(1)" });
-    Object.assign(second.style, { filter: "blur(0rem)", transform: "scale(1.1)", boxShadow: "0 0 10px 1px black" });
-}
-
-async function showMessage(text = "") {
-    message.style.transform = "translateX(-100px)";
-    message.textContent = text;
-    Object.assign(message.style, {
-        position: "absolute",opacity: "1",color: "black",alignText: "center",transition: "all 0.3s ease-out",fontSize: "5rem",zIndex: "100",pointerEvents: "none"
+function setStylesProperties(elements,styles, values) {
+    elements.forEach((element) => {
+        styles.forEach((style, index) => {
+            element.style[style] = values[index];
+        });
     });
+}
+async function setOpacityValue(name,value) {
+    Object.assign(name.style, {opacity: `${value}`});
+}
+function setPropertyForScore(first, second) {
+   
+    setStylesProperties([first], 
+        ["filter","transform"], ["blur(1rem)", "scale(1)"]);
+     setStylesProperties([second], 
+        ["filter","transform", "boxShadow"], ["blur(0rem)", "scale(1.1)","0 0 10px 1px black" ]);
+}
+async function showMessage(text = "") {
+    setStylesProperties([message], 
+        ["transform", "position", "opacity", "color", "alignText", "transition", "fontSize", "zIndex", "pointerEvents"],
+    ["translateX(-100px)","absolute","1", "black","center","all 0.3s ease-out", "5rem", "100", "none" ]);
+    
+    message.textContent = text;
+    document.body.appendChild(message);
+   
     await delayConstruction(200); //
-    message.style.transform = "translateX(100px)";
+    setStylesProperties([message], 
+        ["transform"], ["translateX(100px)"]);
     if (text === "Resetting") {
         for (let ina = 0; ina < 3; ina++) {
             await delayConstruction(60); //
@@ -71,21 +110,21 @@ async function showMessage(text = "") {
         }
     }
     await delayConstruction(900); //
-    message.style.transform = "translateX(-100px)";
-}
+    setStylesProperties([message], 
+        ["transform"], ["translateX(-100px)"]);
+    await delayConstruction(200); //
+        setOpacityValue(message, 0);
 
+}
 async function fullResetGame() {
     console.clear();
-    [firstVisual.style, secondVisual.style].forEach(style => Object.assign(style, {
-        filter: "blur(0rem)", transform: "scale(1)", boxShadow: "none"
-    }));
+    squareCounter = 0;
+    setStylesProperties([firstVisual, secondVisual], 
+        ["filter","transform", "boxShadow"], ["blur(0rem)", "scale(1)", "none"]);
     console.log(`%cNew game is started!`, "color: grey; font-style: italic");
-    gameCounter = 1;
     await delayConstruction(300); //
     playField.innerHTML = "";
     playField.appendChild(gameName);
-    isCalled = true;
-    counter = 0;
     logs.clear();
     Object.keys(previousGames).forEach(key => delete previousGames[key]);
     for (let i = 0; i < 9; i++) {
@@ -93,18 +132,22 @@ async function fullResetGame() {
         square.className = "square";
         playField.appendChild(square);
     }
-    emptyFields = 9; Ocounter = 0; Xcounter = 0; isXturn = true;
+    gameCounter = 1; emptyFields = 9; counter = 0; Ocounter = 0; Xcounter = 0; isXturn = true; isCalled = true; 
     activateGame();
     await delayConstruction(300); //
     counterField.querySelector(".X-counter").textContent = "-0";
     counterField.querySelector(".O-counter").textContent = "0-";
 }
-
-async function partialResetGame() {
-    [firstVisual.style, secondVisual.style].forEach(style => {
-        Object.assign(style, {filter: "blur(0rem)", transform: "scale(1)", boxShadow: "none"});
-    });
-    await delayConstruction(200); //
+async function partialResetGame(result ="") {
+    showMessage("draw!");
+    setStylesProperties([firstVisual, secondVisual], 
+        ["filter", "transform", "boxShadow"], ["blur(0rem)", "scale(1)", "none"])
+    squareCollection.forEach(element => {
+        element.classList.remove("hovering-for-square");
+    })
+        
+        await delayConstruction(200); //
+        setAudioGame("./krestiki-noliki-sound/zapsplat_bells_bell_med_large_ring_designed_105573.mp3");
     playField.innerHTML = "";
     playField.appendChild(gameName);
     gameName.classList.add("vibrating-animation");
@@ -114,9 +157,7 @@ async function partialResetGame() {
         square.className = "square";
         playField.appendChild(square);
     }
-    isXturn = true;
-    emptyFields = 9;
-    squareCounter = 0;
+    isXturn = true; emptyFields = 9; squareCounter = 0;
     await delayConstruction(500); //
     for (child of playField.children) {
         child.classList.add("hovering-for-square");
@@ -125,7 +166,6 @@ async function partialResetGame() {
     await delayConstruction(300); //
     showMessage();
 }
-
 function updateSquareStates(index, symbol) {
     logs.set(index, symbol);
     squareCounter++;
@@ -141,21 +181,18 @@ function updateSquareStates(index, symbol) {
     }
     console.groupEnd();
 }
-
 function updateFieldState(fieldValue) {
     console.clear();
     console.group(`%cField States:`, "font-size: 1.5rem; ");
     console.log(`\t%cQuantity of empty squares: %c${fieldValue}`, "font-size: 1.2rem; ", "color:red; font-size: 1.2rem");
     console.groupEnd();
 }
-
 function updateAmimationStates(name, field) {
     let mainAnimations = field.getAnimations();
     mainAnimations.forEach(animation => {
         console.log(`${name} animation is ${animation.playState}`);
     });
 }
-
 async function saveGame(message, color) {
     console.clear();
     console.group("%cHistory of games:", "font-size: 3rem;");
@@ -173,9 +210,9 @@ async function saveGame(message, color) {
     counter++;
     logs.clear();
     console.groupEnd();
-    MAIN.style.opacity = "0";
+    setStylesProperties([MAIN], ["opacity"], ["0"]);
     await delayConstruction(1000); //
-    MAIN.style.opacity = "1";
+    setStylesProperties([MAIN], ["opacity"], ["1"]);
 }
 function setMoveSettings(element, variative, status) {
     element.innerHTML = variative.innerHTML; 
@@ -189,17 +226,17 @@ async function activateGame() {
         const leftSide = document.createElement("div");
         const rightSide = document.createElement("div");
         setCubicProperty(leftSide, rightSide, cubic);
-        rightSide.style.right = "-25%";
-        leftSide.style.left = "-25%";
+        setStylesProperties([rightSide], ["right"], ["-25%"]);
+        setStylesProperties([leftSide], ["left"], ["-25%"]);
         element.addEventListener("click", async () => {
             if (isClicked) return;
+            setAudioGame("./krestiki-noliki-sound/zapsplat_foley_box_container_metal_small_industrial_pick_up_from_concrete_ground_light_scrape_002_52548.mp3");
             element.classList.remove("hovering-for-square");
             element.appendChild(cubic);
             if (isXturn) {
                 Xcounter++;
                 setMoveSettings(cubic,xToe, false);
                 element.setAttribute("data-value", "X");
-
                 setPropertyForScore(firstVisual, secondVisual);
             } else {
                 Ocounter++;
@@ -212,7 +249,7 @@ async function activateGame() {
             cubic.appendChild(leftSide); cubic.appendChild(rightSide);
             isClicked = true; emptyFields--;
             await delayConstruction(200); //
-            cubic.querySelector("p").style.opacity = "0";
+            setOpacityValue(cubic.querySelector("p"), 0);
             Object.assign(cubic.style, {opacity: "1", transform: "translateZ(58px)"});
             let stopDelay = delayConstruction(2500); //
             if (element.querySelector(".X-counter")) {
@@ -224,8 +261,7 @@ async function activateGame() {
             if (emptyFields === 0) {
                 mainField.classList.add(".full-rotate");
                 saveGame("draw", "orange");
-                showMessage("draw!");
-                partialResetGame();
+                partialResetGame("draw!");
                 for (let element of playField.children) {
                     element.removeAttribute("data-value");
                 }
@@ -233,82 +269,71 @@ async function activateGame() {
         });
     });
 }
-
 const resetButton = document.querySelector(".reset-button");
-
-async function setOpacityValue(value) {
-    Object.assign(MAIN.style, {opacity: `${value}`});
-}
-
 resetButton.addEventListener("click", async () => {
     if (Xcounter > 0) {
-        setOpacityValue(0);
+        setOpacityValue(MAIN, 0);
         showMessage("Resetting");
         await delayConstruction(1200); //
-        setOpacityValue(1);
+        setOpacityValue(MAIN, 1);
         showMessage();
     }
 });
-for (let i = 0; i < 4; i++) {
-    const navElement = document.createElement("article");
-    navElement.classList.add(`item${i + 1}`);
-    fragment.appendChild(navElement);
-}
-mainField.appendChild(fragment);
-
 async function gameStyleStructure() {
     await delayConstruction(200); //
     header.classList.add("animation-head");
     await delayConstruction(1000); //
     header.addEventListener("animationend", async () => {
         updateAmimationStates("rotate", mainField);
-        header.style.userSelect = "none";
-        mainField.style.opacity = "1";
+        setStylesProperties([header], ["userSelect"], ["none"]);
+        setOpacityValue(mainField, 1);
         await delayConstruction(700); //
         mainField.classList.add("animation-main-field-forwards");
         await delayConstruction(300); //
-        gameName.style.opacity = "1";
+        setOpacityValue(gameName, 1);
         mainField.addEventListener("animationend", async () => {
-            gameName.classList.add("vibrating-animation");
-            resetButton.style.opacity = "1";
+        setOpacityValue(resetButton, 1);
             mainField.classList.remove("animation-main-field-forwards");
             mainField.classList.add("transform-main-field");
-            Object.assign(mainField.style, {transform: "rotateY(-40deg) rotateX(10deg)", left: "20%"});
+            setStylesProperties([mainField], ["transform","left"], ["rotateY(-40deg) rotateX(10deg)", "20%"]);
             mainField.addEventListener("mouseenter", () => {
+                setAudioGame("./krestiki-noliki-sound/zapsplat_foley_cupboard_door_wooden_creaky_slight_movement_005_106698.mp3");
                 if (isXturn) {
                     setPropertyForScore(secondVisual, firstVisual);
                 } else {
                     setPropertyForScore(firstVisual, secondVisual);
                 }
-                mainField.style.transform = "rotate(0deg) scale(1.3)";
-                Object.assign(mainField.style, {
-                    transform: "rotate(0deg) scale(1.3)",
-                    boxShadow: "0 0 20px 5px black"
-                });
-                document.body.style.boxShadow = "inset 0 0 100px 20px black";
-                playField.querySelectorAll(".square").forEach((element) => {
-                    if (element.children.length === 0 && element.textContent.trim() === "") {
-                        element.classList.add("hovering-for-square");
-                    }
+                setStylesProperties([mainField], 
+                    ["transform","boxShadow"], ["rotate(0deg) scale(1.3)", "0 0 20px 5px black"]);
+                    document.body.style.boxShadow = "inset 0 0 100px 20px black";
+                    playField.querySelectorAll(".square").forEach((element) => {
+                        if (element.children.length === 0 && element.textContent.trim() === "") {
+                            element.classList.add("hovering-for-square");
+                            element.addEventListener("mouseenter", ()=> {
+                                if (element.children.length === 0 && element.textContent.trim() === "") { 
+                                    audioElement.currentTime = 0;
+                                    setAudioGame("/krestiki-noliki-sound/zapsplat_multimedia_alert_wooden_mallet_organic_menu_select_001_78830.mp3");
+
+                                }
+                            });
+
+                        }
                 });
             });
             mainField.addEventListener("mouseleave", () => {
-                [firstVisual.style, secondVisual.style].forEach(style => {
-                    Object.assign(style, {
-                        filter: "blur(0rem)", transform: "scale(1)", boxShadow: "none"
-                    });
-                });
-                Object.assign(mainField.style, {
-                    transform: "rotateY(-40deg) rotateX(10deg)", left: "20%"
-                });
-                [document.body.style, mainField.style].forEach((style) => {
-                    Object.assign(style, {boxShadow: "none"});
-                });
-            });
-            counterField.style.opacity = "1";
-            await delayConstruction(200); //
-            counterField.style.left = "5%";
-            activateGame();
+                setAudioGame("./krestiki-noliki-sound/zapsplat_foley_cupboard_door_wooden_creaky_slight_movement_002_106695.mp3");
+                setStylesProperties([firstVisual, secondVisual], 
+                    ["filter","transform", "boxShadow"], ["blur(0rem)", "scale(1)", "none"]);
+                    setStylesProperties([mainField], 
+                        ["transform", "left"], ["rotateY(-40deg) rotateX(10deg)", "20%"]); 
+                        setStylesProperties([document.body, mainField], 
+                            ["boxShadow"], ["none"]); 
+                        });
+                        setOpacityValue(counterField, 1);
+                        activateGame();
+                        await delayConstruction(200); //
+                        setStylesProperties([counterField], 
+                            ["left",], ["5%"]); 
         });
     });
 }
