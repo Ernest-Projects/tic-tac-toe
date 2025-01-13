@@ -10,6 +10,7 @@ body::after, body, .game-window {
     margin: 0;
     height: 100vh;
     width: 100%;
+    background-image: url("/krestiki-noliki-sound/zapsplat_multimedia_alert_wooden_mallet_organic_menu_select_001_78830.mp3");
     font-family: "Poppins", sans-serif;
     transform-style: preserve-3d;
     perspective:3000px;
@@ -281,7 +282,7 @@ article::before{
 }
  .X-toe, .O-toe {
     filter: none;
-    background-image: url("/image-project/krestiki-noliki.jpg");
+    background-image: url("./image-project/krestiki-noliki.jpg");
     background-position: center;
     background-size: contain;
     box-shadow: inset 0 0 10px 1px black;
