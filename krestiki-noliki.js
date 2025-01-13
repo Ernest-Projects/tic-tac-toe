@@ -45,8 +45,9 @@ seeCurrentlyWidth();
 createPlaySquares();
 createField();
 
-let previousGames = {};
+let previousGames = {}; let historyPrevious = {};
 let isXturn = true, isCalled = false, Xcounter = 0,  Ocounter = 0, squareCounter = 0, counter = 0,gameCounter = 1;
+let Xscore = 0, Oscore = 0;
 let logs = new Map();
 
 const audioElement = new Audio();
@@ -132,38 +133,39 @@ async function fullResetGame() {
         square.className = "square";
         playField.appendChild(square);
     }
-    gameCounter = 1; emptyFields = 9; counter = 0; Ocounter = 0; Xcounter = 0; isXturn = true; isCalled = true; 
+    gameCounter = 1; emptyFields = 9; counter = 0; Ocounter = 0; Xcounter = 0; isXturn = true; isCalled = true; Xscore = 0; Oscore = 0;
     activateGame();
     await delayConstruction(300); //
     counterField.querySelector(".X-counter").textContent = "-0";
     counterField.querySelector(".O-counter").textContent = "0-";
 }
 async function partialResetGame(result ="") {
-    showMessage("draw!");
+    showMessage(result);
     setStylesProperties([firstVisual, secondVisual], 
         ["filter", "transform", "boxShadow"], ["blur(0rem)", "scale(1)", "none"])
     squareCollection.forEach(element => {
         element.classList.remove("hovering-for-square");
-    })
-        
+        element.removeAttribute("data-value");
+    });
         await delayConstruction(200); //
         setAudioGame("./krestiki-noliki-sound/zapsplat_bells_bell_med_large_ring_designed_105573.mp3");
     playField.innerHTML = "";
     playField.appendChild(gameName);
-    gameName.classList.add("vibrating-animation");
     logs.clear();
+    counterField.querySelector(".X-counter").textContent = `-${Xscore}`;
+    counterField.querySelector(".O-counter").textContent = `${Oscore}-`;
     for (let i = 0; i < 9; i++) {
         const square = document.createElement("div");
         square.className = "square";
         playField.appendChild(square);
     }
-    isXturn = true; emptyFields = 9; squareCounter = 0;
-    await delayConstruction(500); //
+    isXturn = true; emptyFields = 9; squareCounter = 0; Xcounter = 0; Ocounter = 0;
+    await delayConstruction(400); //
     for (child of playField.children) {
         child.classList.add("hovering-for-square");
     }
     activateGame();
-    await delayConstruction(300); //
+    await delayConstruction(250); //
     showMessage();
 }
 function updateSquareStates(index, symbol) {
@@ -197,21 +199,29 @@ async function saveGame(message, color) {
     console.clear();
     console.group("%cHistory of games:", "font-size: 3rem;");
     let quantity = 1;
+    logs.set("result", message);
+    logs.set("color", color);
+
     previousGames[counter] = new Map(logs);
     for (let game in previousGames) {
         console.log(`%c${(game == 0) ? "" : "\n\n"} Game ${parseInt(game) + 1}:`, "font-size: 2rem; ");
-        console.log(`\t %cresult: ${message}`, "color:orange; font-size: 2rem; ");
+        console.log(`\t %cresult: ${previousGames[game].get("result")}`, `color:${previousGames[game].get("color")}; font-size: 2rem;`);
+        
+        const moves = Array.from(previousGames[game].entries());
         quantity = 1;
-        for (let [index, symbol] of previousGames[game]) {
-            console.log(`\t %cMove ${parseInt(quantity)}: { %cSquare: ${index + 1} %c=> %c${symbol} }`, `color: ${color}; font-size: 1.2rem`, "font-size: 1.2rem", "font-size: 1.2rem; color: grey", `color: ${color}; font-size: 1.2rem`);
+
+        for (let move = 0; move < moves.length - 2; move++) {
+            const [index, symbol] = moves[move];
+            console.log(`\t %cMove ${parseInt(quantity)}: { %cSquare: ${index + 1} %c=> %c${symbol} }`, `color: ${previousGames[game].get("color")}; font-size: 1.2rem`, "font-size: 1.2rem", "font-size: 1.2rem; color: grey", `color: ${previousGames[game].get("color")}; font-size: 1.2rem`);
             quantity++;
         }
     }
+
     counter++;
     logs.clear();
     console.groupEnd();
     setStylesProperties([MAIN], ["opacity"], ["0"]);
-    await delayConstruction(1000); //
+    await delayConstruction(800); //
     setStylesProperties([MAIN], ["opacity"], ["1"]);
 }
 function setMoveSettings(element, variative, status) {
@@ -252,26 +262,42 @@ async function activateGame() {
             setOpacityValue(cubic.querySelector("p"), 0);
             Object.assign(cubic.style, {opacity: "1", transform: "translateZ(58px)"});
             let stopDelay = delayConstruction(2500); //
-            if (element.querySelector(".X-counter")) {
-                counterField.querySelector(".X-counter").textContent = `-${Xcounter}`;
-            } else {
-                counterField.querySelector(".O-counter").textContent = `${Ocounter}-`;
+
+            if (emptyFields <= 6) {
+                for(let combination of winningCombinations) {
+                    let [a, b, c] = combination;
+                    if (
+                        ((squareCollection[a].getAttribute("data-value") ==
+                        squareCollection[b].getAttribute("data-value")) && 
+                        (squareCollection[b].getAttribute("data-value") ==
+                        squareCollection[c].getAttribute("data-value"))) && squareCollection[a].getAttribute("data-value") != null && squareCollection[b].getAttribute("data-value") != undefined
+                    ) {
+                        if (squareCollection[a].getAttribute("data-value") === "X") {
+                            Xscore++;
+                            saveGame("X win", "green");
+                            partialResetGame("X win!");
+                            break;
+                        }
+                        else if (squareCollection[a].getAttribute("data-value") === "O") {
+                            Oscore++;
+                            saveGame("O win", "green");
+                            partialResetGame("O win!");
+                            break;
+                        }
+                }
             }
+        }
             await stopDelay; //
             if (emptyFields === 0) {
-                mainField.classList.add(".full-rotate");
-                saveGame("draw", "orange");
-                partialResetGame("draw!");
-                for (let element of playField.children) {
-                    element.removeAttribute("data-value");
-                }
+                saveGame("Draw", "orange");
+                partialResetGame("Draw!");
             }
         });
     });
 }
 const resetButton = document.querySelector(".reset-button");
 resetButton.addEventListener("click", async () => {
-    if (Xcounter > 0) {
+    if (Xscore > 0 || Xcounter > 0) {
         setOpacityValue(MAIN, 0);
         showMessage("Resetting");
         await delayConstruction(1200); //
@@ -297,7 +323,7 @@ async function gameStyleStructure() {
             mainField.classList.add("transform-main-field");
             setStylesProperties([mainField], ["transform","left"], ["rotateY(-40deg) rotateX(10deg)", "20%"]);
             mainField.addEventListener("mouseenter", () => {
-                setAudioGame("./krestiki-noliki-sound/zapsplat_foley_cupboard_door_wooden_creaky_slight_movement_005_106698.mp3");
+                    setAudioGame("./krestiki-noliki-sound/zapsplat_foley_cupboard_door_wooden_creaky_slight_movement_005_106698.mp3");
                 if (isXturn) {
                     setPropertyForScore(secondVisual, firstVisual);
                 } else {
@@ -309,14 +335,6 @@ async function gameStyleStructure() {
                     playField.querySelectorAll(".square").forEach((element) => {
                         if (element.children.length === 0 && element.textContent.trim() === "") {
                             element.classList.add("hovering-for-square");
-                            element.addEventListener("mouseenter", ()=> {
-                                if (element.children.length === 0 && element.textContent.trim() === "") { 
-                                    audioElement.currentTime = 0;
-                                    setAudioGame("/krestiki-noliki-sound/zapsplat_multimedia_alert_wooden_mallet_organic_menu_select_001_78830.mp3");
-
-                                }
-                            });
-
                         }
                 });
             });
